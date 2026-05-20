@@ -3,7 +3,7 @@
  * Plugin Name: Kingmaker Canvas
  * Plugin URI:  https://github.com/Kingmaker-Search/kingmaker-canvas
  * Description: Registers a "Kingmaker Canvas" post template for custom-designed article HTML produced by Kingmaker Search's content-engine. Canvas posts render the site header and footer while bypassing the normal single-post template chrome between them.
- * Version:     1.2.3
+ * Version:     1.2.4
  * Author:      Kingmaker Search
  * License:     GPL-2.0-or-later
  */
@@ -566,49 +566,129 @@ body.kingmaker-canvas-active {
 }
 
 /* ------------------------------------------------------------------
-   Zero-specificity resets via :where(), scoped to article body only.
-   The :where() pseudo-class makes these selectors specificity (0,0,0,1).
-   Any Tailwind utility class on the same element wins (0,0,1,0).
-   Tailwind v4, Open Props, and Andy Bell's CSS reset all use this pattern.
+   Low-priority article reset.
+   Lovable/Tailwind v4 emits utilities inside CSS cascade layers. Broad,
+   unlayered plugin resets beat those utilities, which removes bullets,
+   margins, padding, and flex behavior. Keep broad resets in a named layer
+   so the article's own base/components/utilities can win.
    ------------------------------------------------------------------ */
-.kse-article-body :where(h1, h2, h3, h4, h5, h6) {
-	margin: 0;
-	color: inherit;
-	font-weight: inherit;
-	line-height: inherit;
-}
-.kse-article-body :where(p) {
-	margin: 0;
-}
-.kse-article-body :where(ul, ol) {
-	list-style: none;
-	margin: 0;
-	padding: 0;
-}
-.kse-article-body :where(a) {
-	text-decoration: none;
-	color: inherit;
-}
-.kse-article-body :where(button) {
-	font: inherit;
-}
-.kse-article-body :where(img) {
-	max-width: 100%;
-	height: auto;
-}
-
-/* Tables — strip theme borders/backgrounds so our Tailwind utilities own the look */
-.kse-article-body :where(table, thead, tbody, tr, th, td) {
-	background: none;
-	border: 0;
-	box-shadow: none;
-}
-.kse-article-body :where(table) {
-	border-collapse: collapse;
-	width: 100%;
+@layer kse-canvas-reset {
+	:where(.kse-article-body) :where(h1, h2, h3, h4, h5, h6) {
+		margin: 0;
+		color: inherit;
+		font-weight: inherit;
+		line-height: inherit;
+	}
+	:where(.kse-article-body) :where(p) {
+		margin: 0;
+	}
+	:where(.kse-article-body) :where(ul, ol) {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+	:where(.kse-article-body) :where(a) {
+		text-decoration: none;
+		color: inherit;
+	}
+	:where(.kse-article-body) :where(button) {
+		font: inherit;
+	}
+	:where(.kse-article-body) :where(img) {
+		max-width: 100%;
+		height: auto;
+	}
+	:where(.kse-article-body) :where(table, thead, tbody, tr, th, td) {
+		background: none;
+		border: 0;
+		box-shadow: none;
+	}
+	:where(.kse-article-body) :where(table) {
+		border-collapse: collapse;
+		width: 100%;
+	}
 }
 
 /* Higher-specificity article fixes for host-site global link/button rules. */
+body.kingmaker-canvas-active .kse-article-body,
+body.kingmaker-canvas-active .kse-article-body .font-sans,
+body.kingmaker-canvas-active .kse-article-body .font-display {
+	font-family: inherit !important;
+}
+body.kingmaker-canvas-active .kse-article-body .font-mono {
+	font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+}
+body.kingmaker-canvas-active .kse-article-body a {
+	color: inherit;
+	text-decoration: none;
+}
+body.kingmaker-canvas-active .kse-article-body .prose-body a,
+body.kingmaker-canvas-active .kse-article-body a.underline,
+body.kingmaker-canvas-active .kse-article-body [class~="hover:underline"]:hover {
+	text-decoration-line: underline;
+	text-underline-offset: 0.25rem;
+}
+body.kingmaker-canvas-active .kse-article-body .list-disc {
+	list-style-type: disc !important;
+}
+body.kingmaker-canvas-active .kse-article-body .list-decimal {
+	list-style-type: decimal !important;
+}
+body.kingmaker-canvas-active .kse-article-body .list-none {
+	list-style-type: none !important;
+}
+body.kingmaker-canvas-active .kse-article-body .pl-5 {
+	padding-left: 1.25rem !important;
+}
+body.kingmaker-canvas-active .kse-article-body .space-y-2 > :not(:last-child) {
+	margin-bottom: 0.5rem !important;
+}
+body.kingmaker-canvas-active .kse-article-body [class~="space-y-2.5"] > :not(:last-child) {
+	margin-bottom: 0.625rem !important;
+}
+body.kingmaker-canvas-active .kse-article-body .space-y-3 > :not(:last-child) {
+	margin-bottom: 0.75rem !important;
+}
+body.kingmaker-canvas-active .kse-article-body .space-y-24 > :not(:last-child) {
+	margin-bottom: 6rem !important;
+}
+body.kingmaker-canvas-active .kse-article-body .display-xl {
+	font-size: clamp(2.4rem, 5.5vw, 4rem);
+	font-weight: 800;
+	line-height: 1.02;
+}
+body.kingmaker-canvas-active .kse-article-body .display-lg {
+	font-size: clamp(1.75rem, 3.2vw, 2.5rem);
+	font-weight: 800;
+	line-height: 1.1;
+}
+body.kingmaker-canvas-active .kse-article-body .eyebrow {
+	color: var(--muted-foreground);
+	font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+	font-size: 0.7rem;
+	letter-spacing: 0.18em;
+	text-transform: uppercase;
+}
+body.kingmaker-canvas-active .kse-article-body .prose-body {
+	color: color-mix(in oklab, var(--ink, var(--foreground)) 85%, transparent);
+	font-size: 1.0625rem;
+	line-height: 1.75;
+}
+body.kingmaker-canvas-active .kse-article-body .prose-body a {
+	color: var(--highlight);
+	text-decoration-color: color-mix(in oklab, var(--highlight) 40%, transparent);
+	text-decoration-thickness: 1px;
+}
+body.kingmaker-canvas-active .kse-article-body .prose-body a:hover {
+	text-decoration-color: var(--highlight);
+}
+body.kingmaker-canvas-active .kse-article-body .num-rank {
+	color: var(--highlight);
+	font-size: clamp(3rem, 6vw, 4.5rem);
+	font-variant-numeric: tabular-nums;
+	font-weight: 800;
+	line-height: 0.85;
+}
 body.kingmaker-canvas-active .kse-article-body .text-white,
 body.kingmaker-canvas-active .kse-article-body a.text-white,
 body.kingmaker-canvas-active .kse-article-body button.text-white {
@@ -652,12 +732,16 @@ body.kingmaker-canvas-active .kse-article-body [class~="text-amber-800"] {
    Targeted (not via :where) because this rule needs to win.
    ------------------------------------------------------------------ */
 body.kingmaker-canvas-active .kse-article-body #faq button[aria-expanded] {
+	align-items: flex-start;
 	background: transparent;
 	border: 0;
 	border-radius: 0;
 	box-shadow: none;
 	color: inherit;
+	display: flex;
 	font: inherit;
+	gap: 1.5rem;
+	justify-content: space-between;
 	padding: 1rem 0;
 	text-align: left;
 	width: 100%;
@@ -667,6 +751,15 @@ body.kingmaker-canvas-active .kse-article-body #faq button[aria-expanded] > span
 }
 body.kingmaker-canvas-active .kse-article-body #faq button[aria-expanded]:hover > span:first-child {
 	color: var(--highlight);
+}
+body.kingmaker-canvas-active .kse-article-body #faq button[aria-expanded] > span[aria-hidden] {
+	align-items: center;
+	display: flex;
+	flex-shrink: 0;
+	height: 1.5rem;
+	justify-content: center;
+	margin-top: 0.25rem;
+	width: 1.5rem;
 }
 .kse-article-body dd.grid {
 	display: grid;
@@ -802,7 +895,7 @@ body.kingmaker-canvas-active .kse-article-body nav[aria-label="On this page"] > 
 body.kingmaker-canvas-active .kse-article-body nav[aria-label="On this page"] ul {
 	font-size: 0.84375rem !important;
 	line-height: 1.45 !important;
-	max-height: 68vh !important;
+	max-height: min(54vh, 30rem) !important;
 }
 body.kingmaker-canvas-active .kse-article-body nav[aria-label="On this page"] li + li {
 	margin-top: 0.82rem !important;
@@ -821,6 +914,36 @@ body.kingmaker-canvas-active .kse-article-body nav[aria-label="On this page"] a 
 body.kingmaker-canvas-active .kse-article-body nav[aria-label="On this page"] a.text-foreground > span[aria-hidden],
 body.kingmaker-canvas-active .kse-article-body nav[aria-label="On this page"] a:hover > span[aria-hidden] {
 	background-color: var(--foreground) !important;
+}
+body.kingmaker-canvas-active .kse-article-body nav[aria-label="On this page"] > div:last-child {
+	border-top: 1px solid var(--border) !important;
+	display: block !important;
+	margin-top: 1.25rem !important;
+	padding-top: 1.25rem !important;
+}
+body.kingmaker-canvas-active .kse-article-body .fixed[class~="bottom-5"][class~="left-1/2"] > div {
+	align-items: center !important;
+	display: flex !important;
+	gap: 1rem !important;
+	justify-content: space-between !important;
+	min-height: 3.25rem;
+	padding: 0.75rem 1.25rem !important;
+}
+body.kingmaker-canvas-active .kse-article-body .fixed[class~="bottom-5"][class~="left-1/2"] p {
+	line-height: 1.35 !important;
+	margin: 0 !important;
+}
+body.kingmaker-canvas-active .kse-article-body .fixed[class~="bottom-5"][class~="left-1/2"] a {
+	color: var(--color-white, #fff) !important;
+	text-decoration: none !important;
+	white-space: nowrap;
+}
+@media (max-width: 640px) {
+	body.kingmaker-canvas-active .kse-article-body .fixed[class~="bottom-5"][class~="left-1/2"] > div {
+		flex-wrap: wrap;
+		justify-content: center !important;
+		text-align: center;
+	}
 }
 </style>
 	<?php
@@ -847,7 +970,8 @@ function kse_canvas_inject_js() {
 
 		function updateVisibility() {
 			var rect = tldr.getBoundingClientRect();
-			if ( rect.bottom < 80 ) {
+			var threshold = Math.min(160, window.innerHeight * 0.25);
+			if ( rect.bottom < threshold ) {
 				nav.classList.add('kse-toc-visible');
 			} else {
 				nav.classList.remove('kse-toc-visible');
@@ -856,6 +980,9 @@ function kse_canvas_inject_js() {
 		updateVisibility();
 		window.addEventListener('scroll', updateVisibility, { passive: true });
 		window.addEventListener('resize', updateVisibility, { passive: true });
+		window.addEventListener('load', updateVisibility, { passive: true });
+		window.setTimeout(updateVisibility, 250);
+		window.setTimeout(updateVisibility, 1000);
 
 		/* Active section highlight in TOC */
 		var items = Array.prototype.slice.call(nav.querySelectorAll('[data-toc-href]'));

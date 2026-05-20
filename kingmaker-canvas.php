@@ -190,22 +190,8 @@ function kse_canvas_inject_js() {
 (function () {
 	if ( ! document.body.classList.contains('kingmaker-canvas-active') ) return;
 
-	/* ---- Scroll progress bar: 1px bar at top of viewport, fills as user scrolls ---- */
-	function initScrollProgress() {
-		var bar = document.createElement('div');
-		bar.id = 'kse-scroll-progress';
-		bar.style.cssText = 'position:fixed;top:0;left:0;height:2px;width:0%;background:var(--highlight,oklch(0.62 0.20 252));z-index:9999;transition:width 100ms linear;pointer-events:none;';
-		document.body.appendChild(bar);
-		function update() {
-			var h = document.documentElement;
-			var max = h.scrollHeight - h.clientHeight;
-			var pct = max > 0 ? (h.scrollTop / max) * 100 : 0;
-			bar.style.width = pct + '%';
-		}
-		update();
-		window.addEventListener('scroll', update, { passive: true });
-		window.addEventListener('resize', update, { passive: true });
-	}
+	/* (Scroll progress bar deliberately omitted — host sites typically have their own
+	   via Read Meter / similar plugins. Adding ours would create a duplicate bar.) */
 
 	/* ---- Sticky TOC: show after user scrolls past TLDR ---- */
 	function initStickyToc() {
@@ -316,7 +302,6 @@ function kse_canvas_inject_js() {
 	}
 
 	function init() {
-		initScrollProgress();
 		initStickyToc();
 		initFaqAccordion();
 	}

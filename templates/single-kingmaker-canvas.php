@@ -35,6 +35,7 @@ if ( function_exists( 'wp_body_open' ) ) {
 		?>
 	</main>
 
+	<?php kse_canvas_render_after_article_template(); ?>
 	<?php kse_canvas_render_elementor_location( 'footer' ); ?>
 </div>
 <?php wp_footer(); ?>

@@ -3,7 +3,7 @@
  * Plugin Name: Kingmaker Canvas
  * Plugin URI:  https://github.com/Kingmaker-Search/kingmaker-canvas
  * Description: Registers a "Kingmaker Canvas" post template for custom-designed article HTML produced by Kingmaker Search's content-engine. Canvas posts render the site header and footer while bypassing the normal single-post template chrome between them.
- * Version:     1.2.1
+ * Version:     1.2.2
  * Author:      Kingmaker Search
  * License:     GPL-2.0-or-later
  */
@@ -20,6 +20,10 @@ if ( ! defined( 'KSE_CANVAS_TEMPLATE_PATH' ) ) {
 
 if ( ! defined( 'KSE_CANVAS_DEFAULT_NEWSLETTER_TEMPLATE_ID' ) ) {
 	define( 'KSE_CANVAS_DEFAULT_NEWSLETTER_TEMPLATE_ID', 27302 );
+}
+
+if ( ! defined( 'KSE_CANVAS_PREVIEW_MARKER' ) ) {
+	define( 'KSE_CANVAS_PREVIEW_MARKER', 'kse:canvas-preview' );
 }
 
 /* ---------- Self-update checker (polls GitHub releases) ---------- */
@@ -45,6 +49,97 @@ function kse_canvas_register( $templates ) {
 add_filter( 'theme_page_templates', 'kse_canvas_register' );
 add_filter( 'theme_post_templates', 'kse_canvas_register' );
 
+/* ---------- Preview helpers ---------- */
+
+function kse_canvas_is_preview_request() {
+	$preview = '';
+
+	if ( isset( $_GET['preview'] ) && ! is_array( $_GET['preview'] ) ) {
+		$preview = sanitize_text_field( wp_unslash( $_GET['preview'] ) );
+	}
+
+	return is_preview() || 'true' === $preview;
+}
+
+function kse_canvas_content_has_preview_marker( $content ) {
+	return is_string( $content ) && false !== stripos( $content, KSE_CANVAS_PREVIEW_MARKER );
+}
+
+function kse_canvas_get_preview_autosave( $post_id ) {
+	static $cache = array();
+
+	$post_id = absint( $post_id );
+
+	if ( $post_id <= 0 || ! kse_canvas_is_preview_request() ) {
+		return false;
+	}
+
+	if ( array_key_exists( $post_id, $cache ) ) {
+		return $cache[ $post_id ];
+	}
+
+	$autosave = false;
+	$user_id  = get_current_user_id();
+
+	if ( $user_id > 0 ) {
+		$autosave = wp_get_post_autosave( $post_id, $user_id );
+	}
+
+	if ( ! $autosave ) {
+		$autosave = wp_get_post_autosave( $post_id );
+	}
+
+	if ( ! $autosave ) {
+		$revisions = wp_get_post_revisions(
+			$post_id,
+			array(
+				'check_enabled'  => false,
+				'posts_per_page' => 10,
+				'orderby'        => 'date',
+				'order'          => 'DESC',
+			)
+		);
+
+		foreach ( $revisions as $revision ) {
+			if ( false !== strpos( $revision->post_name, $post_id . '-autosave' ) ) {
+				$autosave = $revision;
+				break;
+			}
+		}
+	}
+
+	$cache[ $post_id ] = $autosave;
+	return $autosave;
+}
+
+function kse_canvas_get_preview_autosave_content( $post_id ) {
+	$autosave = kse_canvas_get_preview_autosave( $post_id );
+
+	return ( $autosave && isset( $autosave->post_content ) ) ? (string) $autosave->post_content : '';
+}
+
+function kse_canvas_apply_preview_autosave_to_main_query( $posts, $query ) {
+	if ( is_admin() || ! $query->is_main_query() || ! kse_canvas_is_preview_request() || empty( $posts ) ) {
+		return $posts;
+	}
+
+	$post_id  = isset( $posts[0]->ID ) ? absint( $posts[0]->ID ) : 0;
+	$autosave = kse_canvas_get_preview_autosave( $post_id );
+
+	if ( ! $autosave || ! kse_canvas_content_has_preview_marker( $autosave->post_content ) ) {
+		return $posts;
+	}
+
+	$posts[0]->post_content = $autosave->post_content;
+
+	if ( isset( $autosave->post_title ) && '' !== trim( $autosave->post_title ) ) {
+		$posts[0]->post_title = $autosave->post_title;
+	}
+
+	return $posts;
+}
+add_filter( 'the_posts', 'kse_canvas_apply_preview_autosave_to_main_query', 10, 2 );
+
 /* ---------- Helper: is the current request a canvas-template post? ---------- */
 
 function kse_canvas_is_active() {
@@ -52,7 +147,16 @@ function kse_canvas_is_active() {
 		return false;
 	}
 	global $post;
-	return $post && get_page_template_slug( $post->ID ) === KSE_CANVAS_SLUG;
+
+	if ( ! $post ) {
+		return false;
+	}
+
+	if ( get_page_template_slug( $post->ID ) === KSE_CANVAS_SLUG ) {
+		return true;
+	}
+
+	return kse_canvas_content_has_preview_marker( kse_canvas_get_preview_autosave_content( $post->ID ) );
 }
 
 /* ---------- Full-page canvas template ---------- */
@@ -96,14 +200,14 @@ function kse_canvas_get_newsletter_template_id() {
 	return (int) apply_filters( 'kse_canvas_newsletter_template_id', KSE_CANVAS_DEFAULT_NEWSLETTER_TEMPLATE_ID );
 }
 
-function kse_canvas_get_newsletter_form_html() {
-	static $is_rendering_form = false;
+function kse_canvas_get_elementor_template_html( $template_id ) {
+	static $rendering_templates = array();
 
-	if ( $is_rendering_form ) {
+	$template_id = absint( $template_id );
+
+	if ( $template_id <= 0 || isset( $rendering_templates[ $template_id ] ) ) {
 		return '';
 	}
-
-	$template_id = kse_canvas_get_newsletter_template_id();
 
 	if ( $template_id <= 0 || ! did_action( 'elementor/loaded' ) || ! class_exists( 'Elementor\Plugin' ) ) {
 		return '';
@@ -119,15 +223,21 @@ function kse_canvas_get_newsletter_form_html() {
 		return '';
 	}
 
-	$is_rendering_form = true;
+	$rendering_templates[ $template_id ] = true;
 	$html = $elementor->frontend->get_builder_content_for_display( $template_id, true );
-	$is_rendering_form = false;
+	unset( $rendering_templates[ $template_id ] );
 
 	if ( ! is_string( $html ) || '' === trim( $html ) ) {
 		return '';
 	}
 
-	return '<div class="kse-canvas-newsletter-form">' . $html . '</div>';
+	return $html;
+}
+
+function kse_canvas_get_newsletter_form_html() {
+	$html = kse_canvas_get_elementor_template_html( kse_canvas_get_newsletter_template_id() );
+
+	return '' === $html ? '' : '<div class="kse-canvas-newsletter-form">' . $html . '</div>';
 }
 
 function kse_canvas_replace_static_newsletter_form( $content ) {
@@ -153,6 +263,60 @@ function kse_canvas_replace_static_newsletter_form( $content ) {
 	return is_string( $updated ) ? $updated : $content;
 }
 
+/* ---------- Optional pre-footer Elementor CTA ---------- */
+
+function kse_canvas_get_control_comment_source() {
+	global $post;
+
+	if ( ! $post ) {
+		return '';
+	}
+
+	$preview_content = kse_canvas_get_preview_autosave_content( $post->ID );
+
+	if ( '' !== $preview_content ) {
+		return $preview_content;
+	}
+
+	return (string) $post->post_content;
+}
+
+function kse_canvas_get_after_article_template_id() {
+	$template_id = 0;
+	$content     = kse_canvas_get_control_comment_source();
+
+	if ( preg_match( '/<!--\s*kse:after-article-template\s*[:=]\s*(none|false|0|\d+)\s*-->/i', $content, $matches ) ) {
+		$value       = strtolower( $matches[1] );
+		$template_id = is_numeric( $value ) ? absint( $value ) : 0;
+	}
+
+	return (int) apply_filters( 'kse_canvas_after_article_template_id', $template_id );
+}
+
+function kse_canvas_render_after_article_template() {
+	$template_id = kse_canvas_get_after_article_template_id();
+
+	if ( $template_id <= 0 ) {
+		return false;
+	}
+
+	$html = kse_canvas_get_elementor_template_html( $template_id );
+
+	if ( '' === $html ) {
+		return false;
+	}
+
+	echo '<section class="kse-canvas-after-article" data-kse-template-id="' . esc_attr( $template_id ) . '">' . $html . '</section>';
+	return true;
+}
+
+function kse_canvas_strip_control_comments( $content ) {
+	$content = preg_replace( '/<!--\s*kse:canvas-preview\s*-->/i', '', $content );
+	$content = preg_replace( '/<!--\s*kse:after-article-template\s*[:=]\s*(?:none|false|0|\d+)\s*-->/i', '', $content );
+
+	return is_string( $content ) ? $content : '';
+}
+
 /* ---------- Wrap post content via the_content filter ---------- *
  * The plugin-owned template bypasses the normal single-post layout.
  * This filter wraps only the designed article HTML in <div class="kse-article-body">.
@@ -167,6 +331,7 @@ function kse_canvas_wrap_content( $content ) {
 		return $content;
 	}
 	$content = kse_canvas_replace_static_newsletter_form( $content );
+	$content = kse_canvas_strip_control_comments( $content );
 	return '<div class="kse-article-body">' . $content . '</div>';
 }
 add_filter( 'the_content', 'kse_canvas_wrap_content', 99 );
@@ -187,6 +352,7 @@ body.kingmaker-canvas-active {
 	overflow-x: clip;
 }
 .kse-canvas-page,
+.kse-canvas-after-article,
 .kse-article-body {
 	width: 100%;
 	margin: 0;

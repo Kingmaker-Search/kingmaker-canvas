@@ -55,10 +55,12 @@ function kse_canvas_inject_css() {
 		return;
 	}
 	?>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style id="kse-canvas-overrides">
+/* Inherit site font — override Tailwind's --font-sans/--font-mono from the post body's inline stylesheet */
+body.kingmaker-canvas-active .kingmaker-canvas-wrapper {
+	--font-sans: inherit;
+	--font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
 /* Strip theme content-wrapper constraints */
 body.kingmaker-canvas-active main,
 body.kingmaker-canvas-active .site-main,
@@ -84,13 +86,6 @@ body.kingmaker-canvas-active .kingmaker-canvas-wrapper {
 	margin: 0;
 	padding: 0;
 	overflow: visible;
-}
-
-/* Force Inter as default font on canvas pages — overrides theme body font */
-body.kingmaker-canvas-active,
-body.kingmaker-canvas-active .kingmaker-canvas-wrapper,
-body.kingmaker-canvas-active .kingmaker-canvas-wrapper * {
-	font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
 /* Strip theme table styling — let our Tailwind utilities define borders/padding */

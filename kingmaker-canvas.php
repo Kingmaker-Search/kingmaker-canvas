@@ -3,7 +3,7 @@
  * Plugin Name: Kingmaker Canvas
  * Plugin URI:  https://github.com/Kingmaker-Search/kingmaker-canvas
  * Description: Registers a "Kingmaker Canvas" post template for custom-designed article HTML produced by Kingmaker Search's content-engine. Canvas posts render the site header and footer while bypassing the normal single-post template chrome between them.
- * Version:     1.2.4
+ * Version:     1.2.5
  * Author:      Kingmaker Search
  * License:     GPL-2.0-or-later
  */
@@ -640,6 +640,60 @@ body.kingmaker-canvas-active .kse-article-body .list-none {
 body.kingmaker-canvas-active .kse-article-body .pl-5 {
 	padding-left: 1.25rem !important;
 }
+body.kingmaker-canvas-active .kse-article-body .mt-1 {
+	margin-top: 0.25rem !important;
+}
+body.kingmaker-canvas-active .kse-article-body [class~="mt-1.5"] {
+	margin-top: 0.375rem !important;
+}
+body.kingmaker-canvas-active .kse-article-body .mt-2 {
+	margin-top: 0.5rem !important;
+}
+body.kingmaker-canvas-active .kse-article-body .mt-3 {
+	margin-top: 0.75rem !important;
+}
+body.kingmaker-canvas-active .kse-article-body .mt-4 {
+	margin-top: 1rem !important;
+}
+body.kingmaker-canvas-active .kse-article-body .mt-5 {
+	margin-top: 1.25rem !important;
+}
+body.kingmaker-canvas-active .kse-article-body .mt-6 {
+	margin-top: 1.5rem !important;
+}
+body.kingmaker-canvas-active .kse-article-body .mt-7 {
+	margin-top: 1.75rem !important;
+}
+body.kingmaker-canvas-active .kse-article-body .mt-8 {
+	margin-top: 2rem !important;
+}
+body.kingmaker-canvas-active .kse-article-body .mt-10 {
+	margin-top: 2.5rem !important;
+}
+body.kingmaker-canvas-active .kse-article-body .mt-12 {
+	margin-top: 3rem !important;
+}
+body.kingmaker-canvas-active .kse-article-body .mt-16 {
+	margin-top: 4rem !important;
+}
+body.kingmaker-canvas-active .kse-article-body .mt-20 {
+	margin-top: 5rem !important;
+}
+body.kingmaker-canvas-active .kse-article-body .mb-2 {
+	margin-bottom: 0.5rem !important;
+}
+body.kingmaker-canvas-active .kse-article-body .mb-3 {
+	margin-bottom: 0.75rem !important;
+}
+body.kingmaker-canvas-active .kse-article-body .mb-4 {
+	margin-bottom: 1rem !important;
+}
+body.kingmaker-canvas-active .kse-article-body .mb-5 {
+	margin-bottom: 1.25rem !important;
+}
+body.kingmaker-canvas-active .kse-article-body .mb-6 {
+	margin-bottom: 1.5rem !important;
+}
 body.kingmaker-canvas-active .kse-article-body .space-y-2 > :not(:last-child) {
 	margin-bottom: 0.5rem !important;
 }
@@ -651,6 +705,164 @@ body.kingmaker-canvas-active .kse-article-body .space-y-3 > :not(:last-child) {
 }
 body.kingmaker-canvas-active .kse-article-body .space-y-24 > :not(:last-child) {
 	margin-bottom: 6rem !important;
+}
+body.kingmaker-canvas-active .kse-article-body .flex {
+	display: flex !important;
+}
+body.kingmaker-canvas-active .kse-article-body .inline-flex {
+	display: inline-flex !important;
+}
+body.kingmaker-canvas-active .kse-article-body .grid {
+	display: grid !important;
+}
+body.kingmaker-canvas-active .kse-article-body .block {
+	display: block !important;
+}
+body.kingmaker-canvas-active .kse-article-body .hidden {
+	display: none !important;
+}
+body.kingmaker-canvas-active .kse-article-body .flex-col {
+	flex-direction: column !important;
+}
+body.kingmaker-canvas-active .kse-article-body .flex-wrap {
+	flex-wrap: wrap !important;
+}
+body.kingmaker-canvas-active .kse-article-body .items-start {
+	align-items: flex-start !important;
+}
+body.kingmaker-canvas-active .kse-article-body .items-center {
+	align-items: center !important;
+}
+body.kingmaker-canvas-active .kse-article-body .items-baseline {
+	align-items: baseline !important;
+}
+body.kingmaker-canvas-active .kse-article-body .justify-between {
+	justify-content: space-between !important;
+}
+body.kingmaker-canvas-active .kse-article-body .justify-center {
+	justify-content: center !important;
+}
+body.kingmaker-canvas-active .kse-article-body .gap-2 {
+	gap: 0.5rem !important;
+}
+body.kingmaker-canvas-active .kse-article-body [class~="gap-2.5"] {
+	gap: 0.625rem !important;
+}
+body.kingmaker-canvas-active .kse-article-body .gap-3 {
+	gap: 0.75rem !important;
+}
+body.kingmaker-canvas-active .kse-article-body .gap-4 {
+	gap: 1rem !important;
+}
+body.kingmaker-canvas-active .kse-article-body .gap-5 {
+	gap: 1.25rem !important;
+}
+body.kingmaker-canvas-active .kse-article-body .gap-6 {
+	gap: 1.5rem !important;
+}
+body.kingmaker-canvas-active .kse-article-body .gap-8 {
+	gap: 2rem !important;
+}
+body.kingmaker-canvas-active .kse-article-body .gap-x-12 {
+	column-gap: 3rem !important;
+}
+body.kingmaker-canvas-active .kse-article-body .gap-x-16 {
+	column-gap: 4rem !important;
+}
+body.kingmaker-canvas-active .kse-article-body [class~="gap-y-1.5"] {
+	row-gap: 0.375rem !important;
+}
+body.kingmaker-canvas-active .kse-article-body .gap-y-10 {
+	row-gap: 2.5rem !important;
+}
+body.kingmaker-canvas-active .kse-article-body .text-xs {
+	font-size: 0.75rem !important;
+	line-height: 1rem !important;
+}
+body.kingmaker-canvas-active .kse-article-body .text-sm {
+	font-size: 0.875rem !important;
+	line-height: 1.25rem !important;
+}
+body.kingmaker-canvas-active .kse-article-body .text-base {
+	font-size: 1rem !important;
+	line-height: 1.5rem !important;
+}
+body.kingmaker-canvas-active .kse-article-body .text-lg {
+	font-size: 1.125rem !important;
+	line-height: 1.75rem !important;
+}
+body.kingmaker-canvas-active .kse-article-body .text-xl {
+	font-size: 1.25rem !important;
+	line-height: 1.75rem !important;
+}
+body.kingmaker-canvas-active .kse-article-body .text-2xl {
+	font-size: 1.5rem !important;
+	line-height: 2rem !important;
+}
+body.kingmaker-canvas-active .kse-article-body .text-3xl {
+	font-size: 1.875rem !important;
+	line-height: 1.2 !important;
+}
+body.kingmaker-canvas-active .kse-article-body .text-4xl {
+	font-size: 2.25rem !important;
+	line-height: 2.5rem !important;
+}
+body.kingmaker-canvas-active .kse-article-body .text-5xl {
+	font-size: 3rem !important;
+	line-height: 1 !important;
+}
+body.kingmaker-canvas-active .kse-article-body .text-6xl {
+	font-size: 3.75rem !important;
+	line-height: 1 !important;
+}
+body.kingmaker-canvas-active .kse-article-body .text-8xl {
+	font-size: 6rem !important;
+	line-height: 1 !important;
+}
+body.kingmaker-canvas-active .kse-article-body [class~="text-[10px]"] {
+	font-size: 10px !important;
+}
+body.kingmaker-canvas-active .kse-article-body [class~="text-[11px]"] {
+	font-size: 11px !important;
+}
+body.kingmaker-canvas-active .kse-article-body [class~="text-[12.5px]"] {
+	font-size: 12.5px !important;
+}
+body.kingmaker-canvas-active .kse-article-body [class~="text-[13px]"] {
+	font-size: 13px !important;
+}
+body.kingmaker-canvas-active .kse-article-body [class~="text-[14px]"] {
+	font-size: 14px !important;
+}
+body.kingmaker-canvas-active .kse-article-body [class~="text-[15px]"] {
+	font-size: 15px !important;
+}
+body.kingmaker-canvas-active .kse-article-body [class~="text-[120px]"] {
+	font-size: 120px !important;
+}
+body.kingmaker-canvas-active .kse-article-body .font-medium {
+	font-weight: 500 !important;
+}
+body.kingmaker-canvas-active .kse-article-body .font-semibold {
+	font-weight: 600 !important;
+}
+body.kingmaker-canvas-active .kse-article-body .font-bold {
+	font-weight: 700 !important;
+}
+body.kingmaker-canvas-active .kse-article-body .font-extrabold {
+	font-weight: 800 !important;
+}
+body.kingmaker-canvas-active .kse-article-body .leading-none {
+	line-height: 1 !important;
+}
+body.kingmaker-canvas-active .kse-article-body .leading-tight {
+	line-height: 1.25 !important;
+}
+body.kingmaker-canvas-active .kse-article-body .leading-snug {
+	line-height: 1.375 !important;
+}
+body.kingmaker-canvas-active .kse-article-body .leading-relaxed {
+	line-height: 1.625 !important;
 }
 body.kingmaker-canvas-active .kse-article-body .display-xl {
 	font-size: clamp(2.4rem, 5.5vw, 4rem);
@@ -886,7 +1098,7 @@ body.kingmaker-canvas-active .kse-article-body #tldr table tbody tr {
 	opacity: 1;
 	pointer-events: auto;
 }
-body.kingmaker-canvas-active .kse-article-body nav[aria-label="On this page"] > div {
+body.kingmaker-canvas-active .kse-article-body nav[aria-label="On this page"] > div:first-child {
 	color: color-mix(in oklab, var(--muted-foreground) 60%, transparent) !important;
 	font-size: 0.6875rem;
 	letter-spacing: 0.18em;
@@ -945,6 +1157,60 @@ body.kingmaker-canvas-active .kse-article-body .fixed[class~="bottom-5"][class~=
 		text-align: center;
 	}
 }
+@media (min-width: 640px) {
+	body.kingmaker-canvas-active .kse-article-body [class~="sm:inline-flex"] {
+		display: inline-flex !important;
+	}
+	body.kingmaker-canvas-active .kse-article-body [class~="sm:text-lg"] {
+		font-size: 1.125rem !important;
+		line-height: 1.75rem !important;
+	}
+	body.kingmaker-canvas-active .kse-article-body [class~="sm:text-3xl"] {
+		font-size: 1.875rem !important;
+		line-height: 1.2 !important;
+	}
+}
+@media (min-width: 768px) {
+	body.kingmaker-canvas-active .kse-article-body [class~="md:text-xl"] {
+		font-size: 1.25rem !important;
+		line-height: 1.75rem !important;
+	}
+	body.kingmaker-canvas-active .kse-article-body [class~="md:text-2xl"] {
+		font-size: 1.5rem !important;
+		line-height: 2rem !important;
+	}
+	body.kingmaker-canvas-active .kse-article-body [class~="md:text-3xl"] {
+		font-size: 1.875rem !important;
+		line-height: 1.2 !important;
+	}
+	body.kingmaker-canvas-active .kse-article-body [class~="md:text-4xl"] {
+		font-size: 2.25rem !important;
+		line-height: 2.5rem !important;
+	}
+	body.kingmaker-canvas-active .kse-article-body [class~="md:grid-cols-2"] {
+		grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+	}
+	body.kingmaker-canvas-active .kse-article-body [class~="md:grid-cols-3"] {
+		grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+	}
+	body.kingmaker-canvas-active .kse-article-body [class~="md:col-span-2"] {
+		grid-column: span 2 / span 2 !important;
+	}
+}
+@media (min-width: 1024px) {
+	body.kingmaker-canvas-active .kse-article-body [class~="lg:block"] {
+		display: block !important;
+	}
+	body.kingmaker-canvas-active .kse-article-body [class~="lg:flex"] {
+		display: flex !important;
+	}
+	body.kingmaker-canvas-active .kse-article-body [class~="lg:grid"] {
+		display: grid !important;
+	}
+	body.kingmaker-canvas-active .kse-article-body [class~="lg:grid-cols-3"] {
+		grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+	}
+}
 </style>
 	<?php
 }
@@ -967,22 +1233,40 @@ function kse_canvas_inject_js() {
 		var tldr = root.querySelector('#tldr');
 		var nav = root.querySelector('nav[aria-label="On this page"]');
 		if ( ! tldr || ! nav ) return;
+		var showAfterY = 0;
 
-		function updateVisibility() {
+		function recalcThreshold() {
 			var rect = tldr.getBoundingClientRect();
 			var threshold = Math.min(160, window.innerHeight * 0.25);
-			if ( rect.bottom < threshold ) {
+			showAfterY = rect.top + window.pageYOffset + tldr.offsetHeight - threshold;
+		}
+
+		function updateVisibility() {
+			if ( window.pageYOffset >= showAfterY ) {
 				nav.classList.add('kse-toc-visible');
 			} else {
 				nav.classList.remove('kse-toc-visible');
 			}
 		}
+		recalcThreshold();
 		updateVisibility();
 		window.addEventListener('scroll', updateVisibility, { passive: true });
-		window.addEventListener('resize', updateVisibility, { passive: true });
-		window.addEventListener('load', updateVisibility, { passive: true });
-		window.setTimeout(updateVisibility, 250);
-		window.setTimeout(updateVisibility, 1000);
+		window.addEventListener('resize', function () {
+			recalcThreshold();
+			updateVisibility();
+		}, { passive: true });
+		window.addEventListener('load', function () {
+			recalcThreshold();
+			updateVisibility();
+		}, { passive: true });
+		window.setTimeout(function () {
+			recalcThreshold();
+			updateVisibility();
+		}, 250);
+		window.setTimeout(function () {
+			recalcThreshold();
+			updateVisibility();
+		}, 1000);
 
 		/* Active section highlight in TOC */
 		var items = Array.prototype.slice.call(nav.querySelectorAll('[data-toc-href]'));

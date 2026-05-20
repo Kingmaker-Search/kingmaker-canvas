@@ -3,7 +3,7 @@
  * Plugin Name: Kingmaker Canvas
  * Plugin URI:  https://github.com/Kingmaker-Search/kingmaker-canvas
  * Description: Registers a "Kingmaker Canvas" post template for custom-designed article HTML produced by Kingmaker Search's content-engine. Canvas posts render the site header and footer while bypassing the normal single-post template chrome between them.
- * Version:     1.2.0
+ * Version:     1.2.1
  * Author:      Kingmaker Search
  * License:     GPL-2.0-or-later
  */
@@ -262,6 +262,31 @@ body.kingmaker-canvas-active .kse-article-body button[class~="bg-[color:var(--hi
 body.kingmaker-canvas-active .kse-article-body a[class~="text-[color:var(--highlight)]"] {
 	color: var(--highlight);
 }
+body.kingmaker-canvas-active .kse-article-body .text-foreground,
+body.kingmaker-canvas-active .kse-article-body [class~="hover:text-foreground"]:hover {
+	color: var(--foreground) !important;
+}
+body.kingmaker-canvas-active .kse-article-body [class~="text-foreground/80"] {
+	color: color-mix(in oklab, var(--foreground) 80%, transparent) !important;
+}
+body.kingmaker-canvas-active .kse-article-body [class~="text-foreground/85"] {
+	color: color-mix(in oklab, var(--foreground) 85%, transparent) !important;
+}
+body.kingmaker-canvas-active .kse-article-body .text-muted-foreground {
+	color: var(--muted-foreground) !important;
+}
+body.kingmaker-canvas-active .kse-article-body [class~="text-muted-foreground/60"] {
+	color: color-mix(in oklab, var(--muted-foreground) 60%, transparent) !important;
+}
+body.kingmaker-canvas-active .kse-article-body [class~="text-muted-foreground/70"] {
+	color: color-mix(in oklab, var(--muted-foreground) 70%, transparent) !important;
+}
+body.kingmaker-canvas-active .kse-article-body [class~="text-white/60"] {
+	color: color-mix(in oklab, var(--color-white, #fff) 60%, transparent) !important;
+}
+body.kingmaker-canvas-active .kse-article-body [class~="text-amber-800"] {
+	color: #92400e !important;
+}
 
 /* ------------------------------------------------------------------
    FAQ accordion — animate open/closed via grid-template-rows.
@@ -350,16 +375,93 @@ body.kingmaker-canvas-active .kse-article-body .kse-canvas-newsletter-form .elem
 }
 
 /* ------------------------------------------------------------------
+   TLDR table — restore the Lovable table against Hello Elementor's
+   default striped table backgrounds and cell borders.
+   ------------------------------------------------------------------ */
+body.kingmaker-canvas-active .kse-article-body #tldr table {
+	background: transparent !important;
+	border: 0 !important;
+	border-collapse: collapse !important;
+	border-spacing: 0 !important;
+	font-size: 0.875rem !important;
+	margin: 0 !important;
+	width: 100% !important;
+}
+body.kingmaker-canvas-active .kse-article-body #tldr table thead,
+body.kingmaker-canvas-active .kse-article-body #tldr table tbody,
+body.kingmaker-canvas-active .kse-article-body #tldr table tr,
+body.kingmaker-canvas-active .kse-article-body #tldr table th,
+body.kingmaker-canvas-active .kse-article-body #tldr table td,
+body.kingmaker-canvas-active .kse-article-body #tldr table tbody > tr:nth-child(odd) > td,
+body.kingmaker-canvas-active .kse-article-body #tldr table tbody > tr:nth-child(odd) > th,
+body.kingmaker-canvas-active .kse-article-body #tldr table tbody tr:hover > td,
+body.kingmaker-canvas-active .kse-article-body #tldr table tbody tr:hover > th {
+	background: transparent !important;
+	box-shadow: none !important;
+}
+body.kingmaker-canvas-active .kse-article-body #tldr table th,
+body.kingmaker-canvas-active .kse-article-body #tldr table td {
+	border: 0 !important;
+	line-height: 1.5 !important;
+	padding-bottom: 0.75rem !important;
+	padding-left: 0 !important;
+	padding-top: 0.75rem !important;
+	vertical-align: top !important;
+}
+body.kingmaker-canvas-active .kse-article-body #tldr table th:not(:last-child),
+body.kingmaker-canvas-active .kse-article-body #tldr table td:not(:last-child) {
+	padding-right: 1rem !important;
+}
+body.kingmaker-canvas-active .kse-article-body #tldr table tr {
+	border-color: var(--border) !important;
+}
+body.kingmaker-canvas-active .kse-article-body #tldr table tbody tr {
+	border-bottom-color: color-mix(in oklab, var(--border) 60%, transparent) !important;
+}
+
+/* ------------------------------------------------------------------
    Sticky TOC visibility — toggled by .kse-toc-visible JS class
    ------------------------------------------------------------------ */
 .kse-article-body nav[aria-label="On this page"] {
 	opacity: 0;
 	pointer-events: none;
 	transition: opacity 500ms;
+	top: 9.5rem !important;
+	max-height: calc(100vh - 11rem) !important;
+	max-width: 16rem;
 }
 .kse-article-body nav[aria-label="On this page"].kse-toc-visible {
 	opacity: 1;
 	pointer-events: auto;
+}
+body.kingmaker-canvas-active .kse-article-body nav[aria-label="On this page"] > div {
+	color: color-mix(in oklab, var(--muted-foreground) 60%, transparent) !important;
+	font-size: 0.6875rem;
+	letter-spacing: 0.18em;
+	margin-bottom: 1.15rem !important;
+}
+body.kingmaker-canvas-active .kse-article-body nav[aria-label="On this page"] ul {
+	font-size: 0.84375rem !important;
+	line-height: 1.45 !important;
+	max-height: 68vh !important;
+}
+body.kingmaker-canvas-active .kse-article-body nav[aria-label="On this page"] li + li {
+	margin-top: 0.82rem !important;
+}
+body.kingmaker-canvas-active .kse-article-body nav[aria-label="On this page"] a {
+	color: color-mix(in oklab, var(--muted-foreground) 70%, transparent) !important;
+	font-weight: 400;
+}
+body.kingmaker-canvas-active .kse-article-body nav[aria-label="On this page"] a.text-foreground,
+body.kingmaker-canvas-active .kse-article-body nav[aria-label="On this page"] a:hover {
+	color: var(--foreground) !important;
+}
+body.kingmaker-canvas-active .kse-article-body nav[aria-label="On this page"] a > span[aria-hidden] {
+	background-color: color-mix(in oklab, var(--muted-foreground) 30%, transparent) !important;
+}
+body.kingmaker-canvas-active .kse-article-body nav[aria-label="On this page"] a.text-foreground > span[aria-hidden],
+body.kingmaker-canvas-active .kse-article-body nav[aria-label="On this page"] a:hover > span[aria-hidden] {
+	background-color: var(--foreground) !important;
 }
 </style>
 	<?php

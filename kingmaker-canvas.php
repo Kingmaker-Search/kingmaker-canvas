@@ -3,7 +3,7 @@
  * Plugin Name: Kingmaker Canvas
  * Plugin URI:  https://github.com/Kingmaker-Search/kingmaker-canvas
  * Description: Registers a "Kingmaker Canvas" post template for custom-designed article HTML produced by Kingmaker Search's content-engine. Canvas posts render the site header and footer while bypassing the normal single-post template chrome between them.
- * Version:     1.2.5
+ * Version:     1.2.6
  * Author:      Kingmaker Search
  * License:     GPL-2.0-or-later
  */
@@ -1087,16 +1087,19 @@ body.kingmaker-canvas-active .kse-article-body #tldr table tbody tr {
    Sticky TOC visibility — toggled by .kse-toc-visible JS class
    ------------------------------------------------------------------ */
 .kse-article-body nav[aria-label="On this page"] {
+	display: none !important;
 	opacity: 0;
 	pointer-events: none;
 	transition: opacity 500ms;
 	top: 9.5rem !important;
 	max-height: calc(100vh - 11rem) !important;
 	max-width: 16rem;
+	visibility: hidden;
 }
 .kse-article-body nav[aria-label="On this page"].kse-toc-visible {
-	opacity: 1;
-	pointer-events: auto;
+	opacity: 1 !important;
+	pointer-events: auto !important;
+	visibility: visible !important;
 }
 body.kingmaker-canvas-active .kse-article-body nav[aria-label="On this page"] > div:first-child {
 	color: color-mix(in oklab, var(--muted-foreground) 60%, transparent) !important;
@@ -1198,6 +1201,12 @@ body.kingmaker-canvas-active .kse-article-body .fixed[class~="bottom-5"][class~=
 	}
 }
 @media (min-width: 1024px) {
+	body.kingmaker-canvas-active .kse-article-body [class~="lg:grid-cols-[minmax(0,calc(100%-352px))_minmax(0,1fr)]"] {
+		grid-template-columns: minmax(0, calc(100% - 352px)) minmax(0, 1fr) !important;
+	}
+	body.kingmaker-canvas-active .kse-article-body [class~="lg:gap-0"] {
+		gap: 0 !important;
+	}
 	body.kingmaker-canvas-active .kse-article-body [class~="lg:block"] {
 		display: block !important;
 	}
@@ -1209,6 +1218,17 @@ body.kingmaker-canvas-active .kse-article-body .fixed[class~="bottom-5"][class~=
 	}
 	body.kingmaker-canvas-active .kse-article-body [class~="lg:grid-cols-3"] {
 		grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+	}
+	body.kingmaker-canvas-active .kse-article-body [class~="lg:pl-16"] {
+		padding-left: 4rem !important;
+	}
+	body.kingmaker-canvas-active .kse-article-body nav[aria-label="On this page"].kse-toc-visible {
+		display: flex !important;
+	}
+}
+@media (min-width: 1280px) {
+	body.kingmaker-canvas-active .kse-article-body [class~="xl:pl-24"] {
+		padding-left: 6rem !important;
 	}
 }
 </style>
@@ -1244,6 +1264,7 @@ function kse_canvas_inject_js() {
 		function updateVisibility() {
 			if ( window.pageYOffset >= showAfterY ) {
 				nav.classList.add('kse-toc-visible');
+				nav.classList.remove('opacity-0','pointer-events-none');
 			} else {
 				nav.classList.remove('kse-toc-visible');
 			}

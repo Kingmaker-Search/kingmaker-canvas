@@ -3,7 +3,7 @@
  * Plugin Name: Kingmaker Canvas
  * Plugin URI:  https://github.com/Kingmaker-Search/kingmaker-canvas
  * Description: Registers a "Kingmaker Canvas" post template for custom-designed article HTML produced by Kingmaker Search's content-engine. Canvas posts render the site header and footer while bypassing the normal single-post template chrome between them.
- * Version:     1.2.2
+ * Version:     1.2.3
  * Author:      Kingmaker Search
  * License:     GPL-2.0-or-later
  */
@@ -19,11 +19,15 @@ if ( ! defined( 'KSE_CANVAS_TEMPLATE_PATH' ) ) {
 }
 
 if ( ! defined( 'KSE_CANVAS_DEFAULT_NEWSLETTER_TEMPLATE_ID' ) ) {
-	define( 'KSE_CANVAS_DEFAULT_NEWSLETTER_TEMPLATE_ID', 27302 );
+	define( 'KSE_CANVAS_DEFAULT_NEWSLETTER_TEMPLATE_ID', 0 );
 }
 
 if ( ! defined( 'KSE_CANVAS_PREVIEW_MARKER' ) ) {
 	define( 'KSE_CANVAS_PREVIEW_MARKER', 'kse:canvas-preview' );
+}
+
+if ( ! defined( 'KSE_CANVAS_SETTINGS_OPTION' ) ) {
+	define( 'KSE_CANVAS_SETTINGS_OPTION', 'kse_canvas_settings' );
 }
 
 /* ---------- Self-update checker (polls GitHub releases) ---------- */
@@ -48,6 +52,171 @@ function kse_canvas_register( $templates ) {
 }
 add_filter( 'theme_page_templates', 'kse_canvas_register' );
 add_filter( 'theme_post_templates', 'kse_canvas_register' );
+
+/* ---------- Per-site settings ---------- */
+
+function kse_canvas_parse_template_id_list( $value ) {
+	if ( is_string( $value ) ) {
+		$value = preg_split( '/[\s,]+/', $value );
+	}
+
+	if ( ! is_array( $value ) ) {
+		return array();
+	}
+
+	$ids = array();
+
+	foreach ( $value as $id ) {
+		$id = absint( $id );
+
+		if ( $id > 0 ) {
+			$ids[] = $id;
+		}
+	}
+
+	return array_values( array_unique( $ids ) );
+}
+
+function kse_canvas_default_settings() {
+	$allowed_after_article_template_ids = array();
+
+	if ( defined( 'KSE_CANVAS_ALLOWED_AFTER_ARTICLE_TEMPLATE_IDS' ) ) {
+		$allowed_after_article_template_ids = kse_canvas_parse_template_id_list( KSE_CANVAS_ALLOWED_AFTER_ARTICLE_TEMPLATE_IDS );
+	}
+
+	return array(
+		'newsletter_template_id'              => absint( KSE_CANVAS_DEFAULT_NEWSLETTER_TEMPLATE_ID ),
+		'allowed_after_article_template_ids' => $allowed_after_article_template_ids,
+	);
+}
+
+function kse_canvas_sanitize_settings( $input ) {
+	$defaults = kse_canvas_default_settings();
+
+	if ( ! is_array( $input ) ) {
+		return $defaults;
+	}
+
+	return array(
+		'newsletter_template_id'              => isset( $input['newsletter_template_id'] ) ? absint( $input['newsletter_template_id'] ) : $defaults['newsletter_template_id'],
+		'allowed_after_article_template_ids' => isset( $input['allowed_after_article_template_ids'] ) ? kse_canvas_parse_template_id_list( $input['allowed_after_article_template_ids'] ) : $defaults['allowed_after_article_template_ids'],
+	);
+}
+
+function kse_canvas_get_settings() {
+	$settings = get_option( KSE_CANVAS_SETTINGS_OPTION, array() );
+	$settings = wp_parse_args( is_array( $settings ) ? $settings : array(), kse_canvas_default_settings() );
+	$settings = kse_canvas_sanitize_settings( $settings );
+
+	return apply_filters( 'kse_canvas_settings', $settings );
+}
+
+function kse_canvas_register_settings() {
+	register_setting(
+		'kse_canvas_settings',
+		KSE_CANVAS_SETTINGS_OPTION,
+		array(
+			'type'              => 'object',
+			'sanitize_callback' => 'kse_canvas_sanitize_settings',
+			'default'           => kse_canvas_default_settings(),
+			'show_in_rest'      => array(
+				'schema' => array(
+					'type'       => 'object',
+					'properties' => array(
+						'newsletter_template_id'              => array(
+							'type'    => 'integer',
+							'default' => 0,
+						),
+						'allowed_after_article_template_ids' => array(
+							'type'    => 'array',
+							'items'   => array(
+								'type' => 'integer',
+							),
+							'default' => array(),
+						),
+					),
+				),
+			),
+		)
+	);
+}
+add_action( 'admin_init', 'kse_canvas_register_settings' );
+add_action( 'rest_api_init', 'kse_canvas_register_settings' );
+
+function kse_canvas_add_settings_page() {
+	add_options_page(
+		__( 'Kingmaker Canvas', 'kingmaker-canvas' ),
+		__( 'Kingmaker Canvas', 'kingmaker-canvas' ),
+		'manage_options',
+		'kingmaker-canvas',
+		'kse_canvas_render_settings_page'
+	);
+}
+add_action( 'admin_menu', 'kse_canvas_add_settings_page' );
+
+function kse_canvas_render_settings_page() {
+	if ( ! current_user_can( 'manage_options' ) ) {
+		return;
+	}
+
+	$settings = kse_canvas_get_settings();
+	?>
+	<div class="wrap">
+		<h1><?php esc_html_e( 'Kingmaker Canvas', 'kingmaker-canvas' ); ?></h1>
+		<p><?php esc_html_e( 'Configure site-specific Elementor templates used by canvas articles. Leave fields blank to disable that feature on this site.', 'kingmaker-canvas' ); ?></p>
+		<form method="post" action="options.php">
+			<?php settings_fields( 'kse_canvas_settings' ); ?>
+			<table class="form-table" role="presentation">
+				<tr>
+					<th scope="row">
+						<label for="kse_canvas_newsletter_template_id"><?php esc_html_e( 'Newsletter template ID', 'kingmaker-canvas' ); ?></label>
+					</th>
+					<td>
+						<input
+							name="<?php echo esc_attr( KSE_CANVAS_SETTINGS_OPTION ); ?>[newsletter_template_id]"
+							id="kse_canvas_newsletter_template_id"
+							type="number"
+							min="0"
+							step="1"
+							value="<?php echo esc_attr( $settings['newsletter_template_id'] ); ?>"
+							class="regular-text"
+						/>
+						<p class="description"><?php esc_html_e( 'Elementor template ID to replace the static newsletter form inside article HTML.', 'kingmaker-canvas' ); ?></p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">
+						<label for="kse_canvas_after_article_template_ids"><?php esc_html_e( 'Allowed pre-footer CTA template IDs', 'kingmaker-canvas' ); ?></label>
+					</th>
+					<td>
+						<input
+							name="<?php echo esc_attr( KSE_CANVAS_SETTINGS_OPTION ); ?>[allowed_after_article_template_ids]"
+							id="kse_canvas_after_article_template_ids"
+							type="text"
+							value="<?php echo esc_attr( implode( ', ', $settings['allowed_after_article_template_ids'] ) ); ?>"
+							class="regular-text"
+						/>
+						<p class="description"><?php esc_html_e( 'Comma-separated Elementor template IDs that article markers are allowed to render above the footer.', 'kingmaker-canvas' ); ?></p>
+					</td>
+				</tr>
+			</table>
+			<?php submit_button(); ?>
+		</form>
+	</div>
+	<?php
+}
+
+function kse_canvas_plugin_action_links( $links ) {
+	$settings_link = sprintf(
+		'<a href="%s">%s</a>',
+		esc_url( admin_url( 'options-general.php?page=kingmaker-canvas' ) ),
+		esc_html__( 'Settings', 'kingmaker-canvas' )
+	);
+
+	array_unshift( $links, $settings_link );
+	return $links;
+}
+add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), 'kse_canvas_plugin_action_links' );
 
 /* ---------- Preview helpers ---------- */
 
@@ -197,7 +366,9 @@ add_filter( 'body_class', 'kse_canvas_body_class' );
 /* ---------- Newsletter form handoff ---------- */
 
 function kse_canvas_get_newsletter_template_id() {
-	return (int) apply_filters( 'kse_canvas_newsletter_template_id', KSE_CANVAS_DEFAULT_NEWSLETTER_TEMPLATE_ID );
+	$settings = kse_canvas_get_settings();
+
+	return (int) apply_filters( 'kse_canvas_newsletter_template_id', $settings['newsletter_template_id'] );
 }
 
 function kse_canvas_get_elementor_template_html( $template_id ) {
@@ -242,25 +413,21 @@ function kse_canvas_get_newsletter_form_html() {
 
 function kse_canvas_replace_static_newsletter_form( $content ) {
 	$form_html = kse_canvas_get_newsletter_form_html();
+	$pattern   = '/<!--\s*kse:newsletter-form\s*-->.*?<!--\s*\/kse:newsletter-form\s*-->/is';
 
-	if ( '' === $form_html ) {
-		return $content;
+	if ( preg_match( $pattern, $content ) ) {
+		$updated = preg_replace( $pattern, $form_html, $content, 1 );
+
+		return is_string( $updated ) ? $updated : $content;
 	}
 
-	$static_form_markup = '<input type="email" placeholder="Email" class="w-full h-10 rounded-md bg-white text-foreground px-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[color:var(--highlight)]"/><button class="mt-3 w-full h-10 rounded-md bg-[color:var(--highlight)] text-white text-sm font-semibold hover:opacity-90 transition">Subscribe to Textual Relations</button>';
+	if ( false !== stripos( $content, '<!-- kse:newsletter-form -->' ) ) {
+		$updated = preg_replace( '/<!--\s*kse:newsletter-form\s*-->/i', $form_html, $content, 1 );
 
-	if ( false === strpos( $content, $static_form_markup ) ) {
-		return $content;
+		return is_string( $updated ) ? $updated : $content;
 	}
 
-	$updated = preg_replace(
-		'/' . preg_quote( $static_form_markup, '/' ) . '/',
-		$form_html,
-		$content,
-		1
-	);
-
-	return is_string( $updated ) ? $updated : $content;
+	return $content;
 }
 
 /* ---------- Optional pre-footer Elementor CTA ---------- */
@@ -290,7 +457,31 @@ function kse_canvas_get_after_article_template_id() {
 		$template_id = is_numeric( $value ) ? absint( $value ) : 0;
 	}
 
-	return (int) apply_filters( 'kse_canvas_after_article_template_id', $template_id );
+	$template_id = (int) apply_filters( 'kse_canvas_after_article_template_id', $template_id );
+
+	if ( $template_id <= 0 ) {
+		return 0;
+	}
+
+	return kse_canvas_is_after_article_template_allowed( $template_id ) ? $template_id : 0;
+}
+
+function kse_canvas_get_allowed_after_article_template_ids() {
+	$settings = kse_canvas_get_settings();
+	$ids      = isset( $settings['allowed_after_article_template_ids'] ) ? $settings['allowed_after_article_template_ids'] : array();
+	$ids      = kse_canvas_parse_template_id_list( $ids );
+
+	return apply_filters( 'kse_canvas_allowed_after_article_template_ids', $ids );
+}
+
+function kse_canvas_is_after_article_template_allowed( $template_id ) {
+	$template_id = absint( $template_id );
+
+	if ( $template_id <= 0 ) {
+		return false;
+	}
+
+	return in_array( $template_id, kse_canvas_get_allowed_after_article_template_ids(), true );
 }
 
 function kse_canvas_render_after_article_template() {
@@ -312,6 +503,8 @@ function kse_canvas_render_after_article_template() {
 
 function kse_canvas_strip_control_comments( $content ) {
 	$content = preg_replace( '/<!--\s*kse:canvas-preview\s*-->/i', '', $content );
+	$content = preg_replace( '/<!--\s*kse:newsletter-form\s*-->/i', '', $content );
+	$content = preg_replace( '/<!--\s*\/kse:newsletter-form\s*-->/i', '', $content );
 	$content = preg_replace( '/<!--\s*kse:after-article-template\s*[:=]\s*(?:none|false|0|\d+)\s*-->/i', '', $content );
 
 	return is_string( $content ) ? $content : '';

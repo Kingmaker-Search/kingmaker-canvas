@@ -3,7 +3,7 @@
  * Plugin Name: Kingmaker Canvas
  * Plugin URI:  https://github.com/Kingmaker-Search/kingmaker-canvas
  * Description: Registers a "Kingmaker Canvas" post template for custom-designed article HTML produced by Kingmaker Search's content-engine. Canvas posts render the site header and footer while bypassing the normal single-post template chrome between them.
- * Version:     1.2.7
+ * Version:     1.2.8
  * Author:      Kingmaker Search
  * License:     GPL-2.0-or-later
  */
@@ -739,6 +739,9 @@ body.kingmaker-canvas-active .kse-article-body .grid {
 body.kingmaker-canvas-active .kse-article-body .block {
 	display: block !important;
 }
+body.kingmaker-canvas-active .kse-article-body .table-cell {
+	display: table-cell !important;
+}
 body.kingmaker-canvas-active .kse-article-body .hidden {
 	display: none !important;
 }
@@ -1217,8 +1220,15 @@ body.kingmaker-canvas-active .kse-article-body .fixed[class~="bottom-5"][class~=
 	body.kingmaker-canvas-active .kse-article-body [class~="md:grid-cols-3"] {
 		grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
 	}
+	body.kingmaker-canvas-active .kse-article-body [class~="md:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]"] {
+		grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr) !important;
+	}
 	body.kingmaker-canvas-active .kse-article-body [class~="md:col-span-2"] {
 		grid-column: span 2 / span 2 !important;
+	}
+	body.kingmaker-canvas-active .kse-article-body [class~="md:table-cell"],
+	body.kingmaker-canvas-active .kse-article-body [class~="md:!table-cell"] {
+		display: table-cell !important;
 	}
 }
 @media (min-width: 1024px) {
@@ -1236,6 +1246,10 @@ body.kingmaker-canvas-active .kse-article-body .fixed[class~="bottom-5"][class~=
 	}
 	body.kingmaker-canvas-active .kse-article-body [class~="lg:grid"] {
 		display: grid !important;
+	}
+	body.kingmaker-canvas-active .kse-article-body [class~="lg:table-cell"],
+	body.kingmaker-canvas-active .kse-article-body [class~="lg:!table-cell"] {
+		display: table-cell !important;
 	}
 	body.kingmaker-canvas-active .kse-article-body [class~="lg:grid-cols-3"] {
 		grid-template-columns: repeat(3, minmax(0, 1fr)) !important;

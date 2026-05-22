@@ -3,7 +3,7 @@
  * Plugin Name: Kingmaker Canvas
  * Plugin URI:  https://github.com/Kingmaker-Search/kingmaker-canvas
  * Description: Registers a "Kingmaker Canvas" post template for custom-designed article HTML produced by Kingmaker Search's content-engine. Canvas posts render the site header and footer while bypassing the normal single-post template chrome between them.
- * Version:     1.2.6
+ * Version:     1.2.7
  * Author:      Kingmaker Search
  * License:     GPL-2.0-or-later
  */
@@ -703,8 +703,29 @@ body.kingmaker-canvas-active .kse-article-body [class~="space-y-2.5"] > :not(:la
 body.kingmaker-canvas-active .kse-article-body .space-y-3 > :not(:last-child) {
 	margin-bottom: 0.75rem !important;
 }
+body.kingmaker-canvas-active .kse-article-body .space-y-4 > :not(:last-child) {
+	margin-bottom: 1rem !important;
+}
+body.kingmaker-canvas-active .kse-article-body .space-y-5 > :not(:last-child) {
+	margin-bottom: 1.25rem !important;
+}
+body.kingmaker-canvas-active .kse-article-body .space-y-7 > :not(:last-child) {
+	margin-bottom: 1.75rem !important;
+}
 body.kingmaker-canvas-active .kse-article-body .space-y-24 > :not(:last-child) {
 	margin-bottom: 6rem !important;
+}
+body.kingmaker-canvas-active .kse-article-body [class~="space-y-[1.15em]"] > :not(:last-child) {
+	margin-bottom: 1.15em !important;
+}
+body.kingmaker-canvas-active .kse-article-body [class~="space-y-[10px]"] > :not(:last-child) {
+	margin-bottom: 10px !important;
+}
+body.kingmaker-canvas-active .kse-article-body [class~="[&>p]:m-0"] > p {
+	margin: 0 !important;
+}
+body.kingmaker-canvas-active .kse-article-body [class~="[&>p+p]:mt-5"] > p + p {
+	margin-top: 1.25rem !important;
 }
 body.kingmaker-canvas-active .kse-article-body .flex {
 	display: flex !important;
